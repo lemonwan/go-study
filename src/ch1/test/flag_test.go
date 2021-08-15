@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestFalgVar(t *testing.T) {
@@ -86,4 +87,64 @@ func TestStruct2(t *testing.T) {
 	t.Log(bookA)
 	t.Log(bookA.author)
 	t.Log(bookB)
+}
+
+func TestStructPtr(t *testing.T) {
+	var book Books = Books{1000, "《java study》", 99.8, "lemonwan"}
+	showBook(&book, t)
+}
+
+func showBook(book *Books, t *testing.T) {
+	t.Log(*book)
+	t.Log(book.id)
+	t.Log(book.title)
+	t.Log(book.price)
+	t.Log(book.author)
+}
+
+func TestMap(t *testing.T) {
+	var m1 map[string]string
+	m1 = make(map[string]string, 10)
+	m1["title"] = "Java study"
+	m1["author"] = "lemonwan"
+	for key, item := range m1 {
+		t.Log(key)
+		t.Log(item)
+	}
+
+	if data, ok := m1["price"]; !ok {
+		t.Log("m1 field not exists")
+	} else {
+		t.Log(data)
+	}
+}
+
+func TestGoroutine(t *testing.T) {
+	go hello("hello")
+	hello("world")
+}
+
+func hello(s string) {
+	for i := 0; i < 30; i++ {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println(s)
+	}
+}
+
+func TestChan(t *testing.T) {
+	ch := make(chan int)
+	go sum([]int{1, 2, 3}, ch)
+	go sum([]int{4, 5, 6}, ch)
+	x, y := <-ch, <-ch
+	t.Log(x)
+	t.Log(y)
+	t.Log(x + y)
+}
+
+func sum(arr []int, ch chan int) {
+	sum := 0
+	for _, v := range arr {
+		sum += v
+	}
+	ch <- sum
 }
