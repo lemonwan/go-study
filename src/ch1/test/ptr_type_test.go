@@ -23,3 +23,24 @@ func TestList(t *testing.T) {
 		t.Log(e.Value)
 	}
 }
+
+func TestChan(t *testing.T) {
+	ch1 := make(chan int, 2)
+	go func() {
+		for i := 0; i < 10; i++ {
+			t.Logf("Sender: send data %v\n", i)
+			ch1 <- i
+		}
+		t.Log("Sender: close send")
+		close(ch1)
+	}()
+
+	for {
+		elem, ok := <-ch1
+		if !ok {
+			t.Log("Receiver: sender closed")
+			break
+		}
+		t.Logf("Receiver: received %v\n", elem)
+	}
+}
