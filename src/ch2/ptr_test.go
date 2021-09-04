@@ -32,3 +32,27 @@ func TestPtr(t *testing.T) {
 	arr := [3]int{12, 13, 14}
 	t.Log(&(arr[0]))
 }
+
+/** 测试goroutine运行情况：如下程序输出结果？ */
+func TestGoRoutine(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		go func() {
+			t.Log(i)
+		}()
+	}
+}
+
+func TestGoRoutineNew(t *testing.T) {
+	num := 10
+	sign := make(chan struct{}, num)
+	for i := 0; i < 10; i++ {
+		go func() {
+			t.Log(i)
+			sign <- struct{}{}
+		}()
+	}
+
+	for j := 0; j < num; j++ {
+		<-sign
+	}
+}
