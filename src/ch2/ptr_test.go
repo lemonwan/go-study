@@ -1,7 +1,9 @@
 package main
 
 import (
+	"sync/atomic"
 	"testing"
+	"time"
 	"unsafe"
 )
 
@@ -55,4 +57,52 @@ func TestGoRoutineNew(t *testing.T) {
 	for j := 0; j < num; j++ {
 		<-sign
 	}
+}
+
+/** 控制goroutine顺序执行输出 */
+func TestGoroutineOrderExec(t *testing.T) {
+	var count uint32
+
+	trigger := func(i uint32, fn func()) {
+		for {
+			if n := atomic.LoadUint32(&count); n == i {
+				fn()
+				atomic.AddUint32(&count, 1)
+				break
+			}
+			time.Sleep(time.Nanosecond)
+		}
+	}
+
+	for i := uint32(0); i < 10; i++ {
+		go func(i uint32) {
+			fn := func() {
+				t.Log(i)
+			}
+			trigger(i, fn)
+		}(i)
+	}
+	trigger(10, func() {})
+}
+
+func TestFor(t *testing.T) {
+	s1 := []int{1, 2, 3, 4, 5, 6}
+	for i := range s1 {
+		if i == 3 {
+			s1[i] |= i
+		}
+	}
+	t.Log(s1)
+	t.Log("------------------")
+
+	numbers := []int{1, 2, 3, 4, 5, 6}
+	maxIndex := len(numbers) - 1
+	for i, e := range numbers {
+		if i == maxIndex {
+			numbers[0] += e
+		} else {
+			numbers[i+1] += e
+		}
+	}
+	t.Log(numbers)
 }
