@@ -19,7 +19,7 @@ func TestSync(t *testing.T) {
 		defer func() {
 			sign <- struct{}{}
 		}()
-		for i := 1; i <= 5; i++ {
+		for i := 1; i <= max; i++ {
 			time.Sleep(time.Millisecond * 500)
 			lock.Lock()
 			for mailbox == 1 {
