@@ -27,3 +27,8 @@ record go study data
     - 访问结构体成员：使用.操作符号
     - 结构体作为函数的参数
     - 结构体指针
+
+### sync包
+- 互斥锁：sync.Mutex
+- sync.WaitGroup
+- select和channel
