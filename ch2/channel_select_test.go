@@ -24,9 +24,10 @@ func twoWork() {
 }
 
 func TestSelectChannel(t *testing.T) {
+	ch := oneWork()
 	twoWork()
 	select {
-	case ret := <-oneWork():
+	case ret := <-ch:
 		t.Log(ret)
 		// t.Log("all task run end")
 	case <-time.After(time.Millisecond * 30):
