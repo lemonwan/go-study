@@ -32,3 +32,10 @@ record go study data
 - 互斥锁：sync.Mutex
 - sync.WaitGroup
 - select和channel
+
+### 构建可复用的模块
+- 包定义
+- 包名和目录名的关系
+- 包名和构建后的文件关系
+- go依赖安装
+    - go get命令：导入github上的包的时候，使用go get命令，不需要加schema和.git文件，下载的包会被放在GOPATH所在的路径，加上~~~-u~~~参数，可以不使用本地GOPATH已经存在的包，强制使用最新的包，例如~~~go get github.com/easierway/concurrent_map~~~
