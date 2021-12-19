@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 )
 
 // 生产者
@@ -72,4 +73,40 @@ func TestChannelCloseNew(t *testing.T) {
 	wg.Add(1)
 	newConsumer(ch, &wg)
 	wg.Wait()
+}
+
+func isCancel(ch chan struct{}) bool {
+	select {
+	// 通道如果关闭了，继续向通道发送数据，则会产生panic错误
+	// 通道如果关闭了，继续从通道获取数据，会立即得到通道数据类型的默认零值
+	case <-ch:
+		return true
+	default:
+		return false
+	}
+}
+
+func cancelOne(ch chan struct{}) {
+	close(ch)
+}
+
+func cancelTwo(ch chan struct{}) {
+	ch <- struct{}{}
+}
+func TestTaskCancel(t *testing.T) {
+	ch := make(chan struct{}, 0)
+	for i := 0; i < 10; i++ {
+		go func(i int, ch chan struct{}) {
+			for {
+				if isCancel(ch) {
+					break
+				}
+				time.Sleep(time.Millisecond * 5)
+				t.Log(i, "run……")
+			}
+			t.Log(i, "success cancel")
+		}(i, ch)
+	}
+	cancelOne(ch)
+	time.Sleep(time.Millisecond * 1)
 }
