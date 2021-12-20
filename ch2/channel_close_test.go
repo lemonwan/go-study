@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"testing"
@@ -108,5 +109,32 @@ func TestTaskCancel(t *testing.T) {
 		}(i, ch)
 	}
 	cancelOne(ch)
+	time.Sleep(time.Millisecond * 1)
+}
+
+// 任务取消上下文
+func isCanceled(ctx context.Context) bool {
+	select {
+	case <-ctx.Done():
+		return true
+	default:
+		return false
+	}
+}
+
+func TestTaskCancelWithContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	for i := 0; i < 10; i++ {
+		go func(i int, ctx context.Context) {
+			for {
+				if isCanceled(ctx) {
+					break
+				}
+				time.Sleep(time.Millisecond * 5)
+			}
+			t.Log(i, "success cancel")
+		}(i, ctx)
+	}
+	cancel()
 	time.Sleep(time.Millisecond * 1)
 }
