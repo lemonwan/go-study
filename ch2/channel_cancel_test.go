@@ -14,7 +14,7 @@ func taskDone(i int) string {
 
 func goTask() string {
 	task := 10
-	ch := make(chan string)
+	ch := make(chan string, task)
 	for i := 0; i < task; i++ {
 		go func(i int) {
 			ret := taskDone(i)
@@ -24,6 +24,8 @@ func goTask() string {
 	return <-ch
 }
 func TestTask(t *testing.T) {
+	t.Log("before: ", runtime.NumGoroutine())
 	t.Log(goTask())
 	time.Sleep(time.Millisecond * 1)
+	t.Log("after: ", runtime.NumGoroutine())
 }
