@@ -56,3 +56,16 @@ func convertToBin(n int) string {
 	}
 	return result
 }
+
+func TestMap(t *testing.T) {
+	var m map[string]string       // m == nil
+	m1 := make(map[string]string) // m1 == empty map
+	t.Log(m, m1)
+	if m == nil {
+		t.Log("m is nil")
+		t.Log(len(m))
+	}
+	if m1 == nil {
+		t.Log("m1 is nil")
+	}
+}
