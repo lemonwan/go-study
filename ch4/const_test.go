@@ -69,3 +69,26 @@ func TestMap(t *testing.T) {
 		t.Log("m1 is nil")
 	}
 }
+
+func TestMapUse(t *testing.T) {
+	t.Log(nonRepeating("abcda"))
+}
+
+/**
+ * 字符串中最长不重复的字符串
+ */
+func nonRepeating(str string) int {
+	lastShow := make(map[byte]int)
+	start := 0
+	maxLength := 0
+	for i, ch := range []byte(str) {
+		if lastI, ok := lastShow[ch]; ok && lastI >= start {
+			start = lastI + 1
+		}
+		if i-start+1 > maxLength {
+			maxLength = i - start + 1
+		}
+		lastShow[ch] = i
+	}
+	return maxLength
+}
