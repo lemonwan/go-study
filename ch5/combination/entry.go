@@ -37,4 +37,6 @@ func main() {
 	fmt.Println(s)
 	post(receiver)
 	fmt.Println(receiver.Contents)
+	fmt.Println("*************")
+	fmt.Println(receiver)
 }

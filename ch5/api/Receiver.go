@@ -10,6 +10,10 @@ type Receiver struct {
 	Contents string
 }
 
+func (r *Receiver) String() string {
+	return fmt.Sprintf("Receiver: {Contents=%s}", r.Contents)
+}
+
 func (r *Receiver) Post(url string, param map[string]string) string {
 	fmt.Println(url)
 	r.Contents = param["contents"]
