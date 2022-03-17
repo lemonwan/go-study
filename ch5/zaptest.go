@@ -11,7 +11,7 @@ type ReceiverInter interface {
 
 func getReceiver() ReceiverInter {
 	// return new(api.Receiver)
-	return api.Receiver{Contents: "hello world"}
+	return &api.Receiver{Contents: "hello world"}
 }
 
 func main() {
@@ -22,13 +22,13 @@ func main() {
 	fmt.Println(str)
 	fmt.Printf("%T %v", receiver, receiver)
 	switch receiver.(type) {
-	case api.Receiver:
+	case *api.Receiver:
 		fmt.Println("api.Receiver")
 	default:
 		fmt.Println("unknown")
 	}
 
-	if inter, ok := receiver.(api.Receiver); ok {
+	if inter, ok := receiver.(*api.Receiver); ok {
 		fmt.Println(inter)
 	} else {
 		fmt.Println("unknown")
