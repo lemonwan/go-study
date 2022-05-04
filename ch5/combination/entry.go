@@ -30,9 +30,22 @@ func post(c C) string {
 }
 
 func main() {
-	var c C
 	receiver := &api.Receiver{Contents: "main"}
-	c = receiver
+	var c C = receiver
+	switch r := c.(type) {
+	// 第一种：判断接口类型的方式
+	case *api.Receiver:
+		fmt.Println(r.Contents)
+	default:
+		fmt.Println("non")
+	}
+
+	fmt.Printf("%T %v \n", c, c)
+	// 第二种：判断接口类型的方式
+	if e, ok := c.(*api.Receiver); ok {
+		fmt.Println("type assertion", e.Contents)
+	}
+
 	s := post(c)
 	fmt.Println(s)
 	post(receiver)
