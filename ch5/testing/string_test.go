@@ -63,3 +63,28 @@ func TestPrintNode(t *testing.T) {
 	node := createTreeNode()
 	node.traverse()
 }
+
+type A struct {
+	Face int
+}
+
+func (a *A) f() {
+	fmt.Println("HI,", a.Face)
+}
+
+// 自定义类型不会继承原有类型的方法（自定义类型不会拥有原基础类型所附带的方法），但接口方法或组合类型的内嵌元素则保留原有的方法。
+type NA A
+
+// 类型别名
+type NB = A
+
+func TestA(t *testing.T) {
+	a := A{Face: 10}
+	a.f()
+
+	// na := NA{Face: 200}
+	// na.f()
+
+	nb := NB{Face: 300}
+	nb.f()
+}
