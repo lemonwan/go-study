@@ -2,6 +2,7 @@ package testing
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 	"unicode/utf8"
 )
@@ -39,13 +40,13 @@ type treeNode struct {
 }
 
 func (node *treeNode) traverse() {
-	fmt.Println(node.value)
 	if node.left != nil {
 		node.left.traverse()
 	}
 	if node.right != nil {
 		node.right.traverse()
 	}
+	fmt.Println(node.value)
 }
 
 func createTreeNode() treeNode {
@@ -87,4 +88,60 @@ func TestA(t *testing.T) {
 
 	nb := NB{Face: 300}
 	nb.f()
+}
+
+type Student struct {
+	name string "学生的名字"
+	Age  int    "学生的年龄"
+	Room int    `json:"room,omitempty"`
+}
+
+func TestReflect(t *testing.T) {
+	s := Student{"wan", 20, 1}
+	t.Log(reflect.TypeOf(s).Field(0).Tag)
+	t.Log(reflect.TypeOf(s).Field(1).Tag)
+	t.Log(reflect.TypeOf(s).Field(2).Tag)
+}
+
+type MyInt int
+
+type I interface {
+	Print()
+	AddAndPrint(int)
+	Add()
+}
+
+func (m MyInt) Print() {
+	fmt.Println(m)
+}
+
+func (m MyInt) AddAndPrint(a int) {
+	fmt.Println(int(m) + a)
+}
+
+func (m *MyInt) Add() {
+	fmt.Println(m)
+}
+
+func TestSelfType(t *testing.T) {
+	a := MyInt(10)
+	a.Print()
+	a.Add()
+
+	// 选择器
+	MyInt.AddAndPrint(a, 5)
+
+	a.AddAndPrint(5)
+
+}
+
+func interHandle(i I) {
+	i.AddAndPrint(10)
+}
+
+func TestInterface(t *testing.T) {
+	i := MyInt(10)
+	// 指针对象即可以调用值方法，也可以调用指针方法
+	var in I = &i
+	interHandle(in)
 }
