@@ -145,3 +145,52 @@ func TestInterface(t *testing.T) {
 	var in I = &i
 	interHandle(in)
 }
+
+//  类型和作用在它上面定义的方法必须在同一个包中定义
+// 以下程序会编译错误
+//func (i int) Print() {
+//
+//}
+
+type People struct {
+	Name   string
+	gender string
+	Age    int
+}
+
+type OtherPeople struct {
+	People
+}
+
+func (p People) PeInfo() {
+	fmt.Println("People ", p.Name, ": ", p.Age, "岁, 性别:", p.gender)
+}
+
+func (p *People) PeName(name string) {
+	fmt.Println("old name:", p.Name)
+	p.Name = name
+	fmt.Println("new name:", p.Name)
+}
+
+func methodSet(a interface{}) {
+	t := reflect.TypeOf(a)
+	fmt.Printf("%T\n", a)
+	for i, n := 0, t.NumMethod(); i < n; i++ {
+		m := t.Method(i)
+		fmt.Println(i, ":", m.Name, m.Type)
+	}
+}
+
+func TestFuncIn(t *testing.T) {
+	p := OtherPeople{
+		People{
+			Name:   "wan",
+			gender: "male",
+			Age:    20,
+		},
+	}
+	p.PeInfo()
+	p.PeName("lemon")
+	methodSet(p)
+	methodSet(&p)
+}
