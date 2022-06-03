@@ -8,7 +8,7 @@ import (
 )
 
 func TestEncode(t *testing.T) {
-	s := "hello，万志军"
+	s := "hello，世界"
 	t.Log(len(s))
 	t.Log(utf8.RuneCountInString(s))
 
