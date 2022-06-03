@@ -80,8 +80,8 @@ func (b *Book) SetName(wg *sync.WaitGroup, name string) {
 		wg.Done()
 	}()
 
-	fmt.Printf("Lock set name: %v\n", name)
 	b.L.Lock()
+	fmt.Printf("Lock set name: %v\n", name)
 	time.Sleep(time.Second * 2)
 	b.Name = name
 }
