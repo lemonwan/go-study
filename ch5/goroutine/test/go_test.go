@@ -66,3 +66,34 @@ func TestLock(t *testing.T) {
 	t.Log("unlocked (G0)")
 	wg.Wait()
 }
+
+// sync.Mutex用作结构体的一部分，这样这个struct就可以防止多线程修改数据
+type Book struct {
+	Name string
+	L    *sync.Mutex
+}
+
+func (b *Book) SetName(wg *sync.WaitGroup, name string) {
+	defer func() {
+		fmt.Printf("Unlock set name: %v\n", name)
+		b.L.Unlock()
+		wg.Done()
+	}()
+
+	fmt.Printf("Lock set name: %v\n", name)
+	b.L.Lock()
+	time.Sleep(time.Second * 2)
+	b.Name = name
+}
+
+func TestMutexStruct(t *testing.T) {
+	b := new(Book)
+	b.L = new(sync.Mutex)
+	wg := &sync.WaitGroup{}
+	books := []string{"《三国演义》", "《道德经》", "《西游记》"}
+	for _, book := range books {
+		wg.Add(1)
+		go b.SetName(wg, book)
+	}
+	wg.Wait()
+}
