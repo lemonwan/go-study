@@ -39,3 +39,30 @@ func receive(c <-chan int, w *sync.WaitGroup) {
 	t := <-c
 	fmt.Println(t)
 }
+
+func TestLock(t *testing.T) {
+	var wg sync.WaitGroup
+	var mutex sync.Mutex
+
+	t.Log("Locking (G0)")
+	mutex.Lock()
+	t.Log("Locked (G0)")
+	wg.Add(3)
+	for i := 1; i < 4; i++ {
+		go func(i int) {
+			t.Logf("Locking (G%d)\n", i)
+			mutex.Lock()
+			t.Logf("Locked (G%d)\n", i)
+
+			time.Sleep(time.Second * 2)
+			mutex.Unlock()
+			t.Logf("unlocked (G%d)\n", i)
+			wg.Done()
+		}(i)
+	}
+	time.Sleep(time.Second * 5)
+	t.Log("ready unlock (G0)")
+	mutex.Unlock()
+	t.Log("unlocked (G0)")
+	wg.Wait()
+}
