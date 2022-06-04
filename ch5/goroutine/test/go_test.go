@@ -97,3 +97,32 @@ func TestMutexStruct(t *testing.T) {
 	}
 	wg.Wait()
 }
+
+// 读写锁使用
+func TestRWMutex(t *testing.T) {
+	wg := sync.WaitGroup{}
+	wg.Add(20)
+	var rwMutex sync.RWMutex
+	Data := 0
+	for i := 0; i < 10; i++ {
+		// 读
+		go func() {
+			rwMutex.RLock()
+			defer rwMutex.RUnlock()
+			t.Logf("Read Data: %v\n", Data)
+			wg.Done()
+			time.Sleep(time.Second * 2)
+		}()
+		// 写
+		go func(n int) {
+			rwMutex.Lock()
+			defer rwMutex.Unlock()
+			Data += n
+			t.Logf("Write Data: %v %d\n", Data, n)
+			wg.Done()
+			time.Sleep(time.Second * 2)
+		}(i)
+	}
+	time.Sleep(time.Second * 5)
+	wg.Wait()
+}
