@@ -126,3 +126,36 @@ func TestRWMutex(t *testing.T) {
 	time.Sleep(time.Second * 5)
 	wg.Wait()
 }
+
+func TestSyncMap(t *testing.T) {
+	m := make(map[string]string)
+	m["a"] = "b"
+	t.Log(m)
+
+	var m1 sync.Map
+	m1.Store("name", "lemon")
+	m1.Store("gender", "male")
+
+	v, ok := m1.LoadOrStore("name", "hello")
+	t.Log(ok, v)
+
+	v, ok = m1.LoadOrStore("name1", "hello")
+	t.Log(ok, v)
+
+	v, ok = m1.Load("name")
+	if ok {
+		t.Log("key 存在，值是：", v)
+	} else {
+		t.Log("key 值不存在")
+	}
+
+	f := func(k, v interface{}) bool {
+		t.Log(k, v)
+		return true
+	}
+	m1.Range(f)
+
+	m1.Delete("name1")
+	t.Log(m1.Load("name1"))
+
+}
