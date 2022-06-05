@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"reflect"
 	"runtime"
 	"sync"
 	"testing"
@@ -158,4 +159,32 @@ func TestSyncMap(t *testing.T) {
 	m1.Delete("name1")
 	t.Log(m1.Load("name1"))
 
+}
+
+func TestReflect(t *testing.T) {
+	var a int = 5
+	v := reflect.ValueOf(a)
+	w := reflect.TypeOf(a)
+	t.Log(v, w, v.Type(), v.Kind(), w.Kind())
+
+	var b [5]int = [5]int{1, 2, 3, 4}
+	t.Log(b)
+	t.Log(reflect.TypeOf(b), reflect.ValueOf(b))
+	t.Log(reflect.TypeOf(b).Kind(), reflect.TypeOf(b).Elem())
+	t.Log(reflect.ValueOf(b).Kind(), reflect.ValueOf(b).Type())
+}
+
+func TestReflectModify(t *testing.T) {
+	a := 10
+	t.Log(reflect.TypeOf(a), reflect.ValueOf(a))
+	t.Log(reflect.TypeOf(a).Kind(), reflect.TypeOf(&a).Elem())
+	t.Log(reflect.ValueOf(a).Kind(), reflect.ValueOf(&a).Elem())
+
+	elem := reflect.ValueOf(&a).Elem()
+	t.Log(elem.CanAddr())
+	elem.SetInt(10000)
+	t.Log(a)
+
+	var b [5]int = [5]int{5, 6, 7, 8}
+	t.Log(reflect.TypeOf(b), reflect.TypeOf(b).Kind(), reflect.TypeOf(b).Elem())
 }
