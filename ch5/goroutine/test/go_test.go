@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"runtime"
+	"sort"
 	"sync"
 	"testing"
 	"time"
@@ -218,4 +219,59 @@ func TestReflectNew(t *testing.T) {
 	t.Log(reflect.ValueOf(m).Field(1))
 	t.Log(reflect.ValueOf(m).Field(0).Type(), reflect.ValueOf(m).Field(0).Kind())
 	t.Log(reflect.ValueOf(m).Field(0).String())
+}
+
+func TestSort(t *testing.T) {
+	a := []int{10, 9, 20, -1}
+	sort.Ints(a)
+	t.Log(a)
+
+	// 逆序排列
+	b := []int{10, 9, 20, -1}
+	slice := sort.IntSlice(b)
+	reverse := sort.Reverse(slice)
+	sort.Sort(reverse)
+	t.Log(b)
+}
+
+type Student struct {
+	Name string
+	Age  int
+}
+
+type StudentSlice []Student
+
+func (s StudentSlice) Len() int {
+	return len(s)
+}
+
+func (s StudentSlice) Less(i, j int) bool {
+	return s[i].Age < s[j].Age
+}
+
+func (s StudentSlice) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func TestSelfSort(t *testing.T) {
+	a := StudentSlice{
+		{
+			Name: "a",
+			Age:  10,
+		},
+		{
+			Name: "b",
+			Age:  9,
+		},
+		{
+			Name: "c",
+			Age:  20,
+		},
+		{
+			Name: "d",
+			Age:  1,
+		},
+	}
+	sort.Sort(a)
+	t.Log(a)
 }
