@@ -188,3 +188,34 @@ func TestReflectModify(t *testing.T) {
 	var b [5]int = [5]int{5, 6, 7, 8}
 	t.Log(reflect.TypeOf(b), reflect.TypeOf(b).Kind(), reflect.TypeOf(b).Elem())
 }
+
+type MyInt struct {
+	value string
+	t     int
+}
+
+type MyIntNew int
+
+func (m MyInt) Print() {
+	fmt.Println(m)
+}
+
+func (m MyIntNew) Print() {
+	fmt.Println(m)
+}
+
+func TestReflectNew(t *testing.T) {
+	m := MyInt{"lemon", 10}
+	m.Print()
+
+	of := reflect.ValueOf(m.Print)
+	t.Log(of.String(), reflect.TypeOf(m.Print).Kind())
+
+	t.Log(reflect.TypeOf(m).String())
+	t.Log(reflect.TypeOf(m).NumField())
+	t.Log(reflect.TypeOf(m).Field(0).Name)
+
+	t.Log(reflect.ValueOf(m).Field(1))
+	t.Log(reflect.ValueOf(m).Field(0).Type(), reflect.ValueOf(m).Field(0).Kind())
+	t.Log(reflect.ValueOf(m).Field(0).String())
+}
