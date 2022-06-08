@@ -1,7 +1,9 @@
 package test
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"reflect"
 	"runtime"
 	"sort"
@@ -274,4 +276,17 @@ func TestSelfSort(t *testing.T) {
 	}
 	sort.Sort(a)
 	t.Log(a)
+}
+
+func TestBuffIo(t *testing.T) {
+	file, _ := os.OpenFile("./t.txt", os.O_RDWR|os.O_CREATE, 0666)
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+	slice, _ := reader.ReadSlice('#')
+	t.Log(string(slice))
+
+	Wr := bufio.NewWriter(file)
+	Wr.WriteString("WriteString writes a ## string.")
+	Wr.Flush()
 }
