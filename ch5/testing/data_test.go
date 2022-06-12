@@ -3,8 +3,11 @@ package testing
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"net"
 	"strings"
 	"testing"
+	"time"
 )
 
 func add(a, b int) int {
@@ -38,4 +41,82 @@ func TestReader(t *testing.T) {
 	sprintf := fmt.Sprintf("%.4g\n", 123.45)
 	t.Log(sprintf)
 	fmt.Printf("%6.2f\n", 123.45)
+}
+
+func TestTcpServer(t *testing.T) {
+	var tcpAddr *net.TCPAddr
+	tcpAddr, _ = net.ResolveTCPAddr("tcp", "127.0.0.1:9000")
+	tcpListener, _ := net.ListenTCP("tcp", tcpAddr)
+	defer tcpListener.Close()
+	t.Log("Server ready to read ...")
+	for {
+		tcp, err := tcpListener.AcceptTCP()
+		if err != nil {
+			t.Log("accept err：", err)
+			continue
+		}
+		t.Log("A client connected : ", tcp.RemoteAddr().String())
+		go tcpPipe(tcp)
+	}
+}
+
+func tcpPipe(conn *net.TCPConn) {
+	ip := conn.RemoteAddr().String()
+	defer func() {
+		fmt.Println("Disconnected : ", ip)
+		conn.Close()
+	}()
+	reader := bufio.NewReader(conn)
+	i := 0
+	for {
+		readString, err := reader.ReadString('\n')
+		if err != nil || err == io.EOF {
+			break
+		}
+		fmt.Println(readString)
+		time.Sleep(time.Second * 3)
+		msg := time.Now().String() + conn.RemoteAddr().String() + " Server Say hello! \n"
+		b := []byte(msg)
+		conn.Write(b)
+		i++
+		if i > 10 {
+			break
+		}
+	}
+}
+
+func TestTcpClient(t *testing.T) {
+	var tcpAddr *net.TCPAddr
+	tcpAddr, _ = net.ResolveTCPAddr("tcp", "127.0.0.1:9000")
+	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		t.Log("Client connect error ! " + err.Error())
+		return
+	}
+	defer conn.Close()
+	t.Log(conn.LocalAddr().String() + " : Client connected!")
+	onMessageReceived(conn)
+}
+
+func onMessageReceived(conn *net.TCPConn) {
+	reader := bufio.NewReader(conn)
+	b := []byte(conn.LocalAddr().String() + " Say hello to Server... \n")
+	conn.Write(b)
+	for {
+		msg, err := reader.ReadString('\n')
+		fmt.Println("ReadString")
+		fmt.Println(msg)
+		if err != nil || err == io.EOF {
+			fmt.Println(err)
+			break
+		}
+		time.Sleep(time.Second * 2)
+		fmt.Println("writing...")
+		b := []byte(conn.LocalAddr().String() + " write data to Server... \n")
+		_, err = conn.Write(b)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+	}
 }
